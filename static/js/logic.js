@@ -41,21 +41,49 @@ let basemap = L.tileLayer(
         }
       }
       // Create a GeoJson layer containing the features array 
-      function style(feature){
+      function styles(feature){
         return {
-            fillColor: getColor(feature.geometry.coordinate[1]),
+            fillColor: getColor(feature.geometry.coordinates[2]),
             radius: radius(feature.properties.mag),
             fillOpacity: 1,
             weight: 0.5,
             stroke: true,
         }
       }
-      L.geoJson(data,{
-        pointToLayer: function(feature, latlng){
-            return L.circleMarker(latlng);
-        },
+     
+    L.geoJson(data,{
+      pointToLayer: function(feature, latlng){
+          return L.circleMarker(latlng);
+      },
 
-        style: style,
+      style: styles,
 
-      })
-  })
+      onEachFeature: function (feature, layer) {
+        layer. bindPopup (
+          "magnitude: "+ feature.properties.mag + "<br>depth:" + feature.geometry.coordinates[2]+"<br>location:"+feature.properties.place
+        );
+      }
+
+
+    
+
+    }).addTo(map)
+
+    let legend = L.control({
+      position: "bottomright"
+    });
+
+    legend. onAdd = function(){
+      let div = L. DomUtil. create("div", "info legend");
+
+      let grade = []
+      let color = []
+
+      for (let i=0; i <grade.length; i ++){
+        div.innerHTML += "<i syle = 'background:" + color[i]+ "'></i> " + grade[i] + (grade[i + 1] ? "&ndash;" + grade[i + 1] + "br" : "+");
+      }
+      return div;
+    };
+
+    legend.addTo(map);
+  });
